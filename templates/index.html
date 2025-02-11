@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block welcome %}{{ super() }} {{ name }}{% endblock %}
+
+{% block content %}
+    <h1>{{ app_name }}</h1>
+{% endblock %}
