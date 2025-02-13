@@ -1,6 +1,7 @@
 from flask import Flask, render_template, url_for, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 
+
 app = Flask(__name__)
 
 # configure sqlalchmey to tell flask where the databse is present
@@ -51,7 +52,56 @@ def home():
       
       # Only redirect if NOT an HTMX request
       return redirect(url_for('home'))
-  
+
   # Fetch all tasks for initial page load or page refresh
   tasks = Todo.query.order_by(Todo.id.desc()).all()
   return render_template('index.html', name="Jakob Vargis", app_name="Todo Tasks", tasks=tasks)
+
+
+@app.route('/edit/<int:task_id>', methods=['GET'])
+def task_edit(task_id):
+   if request.method == 'GET':
+        TASK = Todo.query.get_or_404(task_id)
+        return render_template('__partials/edit_task_list.html', task=TASK)
+
+
+@app.route('/update/<int:task_id>', methods=['POST'])
+def task_update(task_id):
+   if request.method == 'POST':
+      TASK = Todo.query.get_or_404(task_id)
+      new_task_value = request.form.get('task', '').strip()
+      if not new_task_value:
+         return "Task cannot be empty", 400
+      
+      TASK.task = new_task_value
+      try:
+         db.session.commit()
+      except Exception as e:
+         db.session.rollback()
+         return f"Error: {e}", 500
+      return render_template('__partials/task_item.html', task=TASK)
+
+
+@app.route('/cancel/<int:task_id>', methods=['GET'])
+def cancel_edit(task_id):
+   if request.method == 'GET':
+      TASK = Todo.query.get_or_404(task_id)
+      return render_template('__partials/task_item.html', task=TASK)
+
+
+@app.route('/delete/<int:task_id>', methods=['DELETE'])
+def task_delete(task_id):
+    TASK = Todo.query.get_or_404(task_id)
+    try:
+        db.session.delete(TASK)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return f"Error: {e}", 500
+
+    # Return an empty response to let HTMX remove the task from the UI
+    return "", 200
+
+
+if __name__ == '__main__':
+   app.run('0.0.0.0', debug=True)

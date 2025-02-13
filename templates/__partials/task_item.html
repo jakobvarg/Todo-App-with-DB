@@ -1,0 +1,7 @@
+<div id="task-{{task.id}}" class="row mt-2">
+  <div class="col-8">{{task.task}}</div>
+  <div class="col-4 text-right">
+      <button hx-get="/edit/{{task.id}}" hx-target="#task-{{task.id}}" hx-swap="outerHTML" class="btn btn-primary btn-sm">Edit</button>
+      <button class="btn btn-danger btn-sm">Delete</button>
+  </div>
+</div>

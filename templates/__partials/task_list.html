@@ -1,10 +1,10 @@
 {% if tasks %}
   {% for task in tasks %}
-  <div class="row mt-2">
+  <div id="task-{{task.id}}" class="row mt-2">
     <div class="col-8">{{task.task}}</div>
     <div class="col-4 text-right">
-        <a href="/" class="btn btn-primary btn-sm">Edit</a>
-        <a href="/" class="btn btn-danger btn-sm">Delete</a>
+        <button hx-get="/edit/{{task.id}}" hx-target="#task-{{task.id}}" hx-swap="outerHTML" class="btn btn-primary btn-sm">Edit</button>
+        <button hx-delete="/delete/{{task.id}}" hx-target="#task-{{task.id}}" hx-swap="outerHTML" class="btn btn-danger btn-sm">Delete</button>
     </div>
   </div>
   {% endfor %}
